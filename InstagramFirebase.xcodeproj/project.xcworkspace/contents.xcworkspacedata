@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Dilkagram.xcodeproj">
+      location = "self:/Users/grigoriy/Desktop/Swift/Dilkagram/InstagramFirebase.xcodeproj">
    </FileRef>
 </Workspace>
