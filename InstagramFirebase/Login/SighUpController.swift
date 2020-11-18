@@ -125,6 +125,25 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         return button
     }()
     
+    let alreadyHaveAccountButton: UIButton = {
+        let button = UIButton(type: .system)
+        
+        let attributedTitle = NSMutableAttributedString(string: "Already have an account?  ", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        
+        attributedTitle.append(NSAttributedString(string: "Sign In", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.rgb(red: 17, green: 154, blue: 237)]))
+        
+        button.setAttributedTitle(attributedTitle, for: .normal)
+        
+        
+        button.addTarget(self, action: #selector(handleAlreadyHaveAccount), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    @objc fileprivate func handleAlreadyHaveAccount() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     @objc func handleSignUp() {
         guard let email = emailTextField.text, email.count > 0 else { return }
         guard let username = usernameTextField.text, username.count > 0 else { return }
@@ -178,7 +197,12 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
                             }
 
                             print("Successfully saved user info to database")
-
+                            
+                            guard let mainTabBarController = UIApplication.shared.windows.first(where: {$0.isKeyWindow})?.rootViewController as? MainTabBarController else { return }
+                            
+                            mainTabBarController.setupViewControllers()
+                            
+                            self.dismiss(animated: true, completion: nil)
                         }
                     }
                 }
@@ -201,6 +225,8 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         
         plusPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
+        view.addSubview(alreadyHaveAccountButton)
+        alreadyHaveAccountButton.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -20, paddingRight: 0, width: 0, height: 50)
         
         
         setupInputFields()

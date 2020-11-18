@@ -38,6 +38,11 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
             do {
                 try FirebaseAuth.Auth.auth().signOut()
                 
+                let loginController = LoginController()
+                let navigationController = UINavigationController(rootViewController: loginController)
+                navigationController.modalPresentationStyle = .overFullScreen
+                
+                self.present(navigationController, animated: true, completion: nil)
                 
             } catch let sighOutError {
                 print("Failed to sign out: \(sighOutError)")

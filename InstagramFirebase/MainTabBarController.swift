@@ -26,16 +26,42 @@ class MainTabBarController: UITabBarController {
             return
         }
         
+        setupViewControllers()
+    }
+    
+     func setupViewControllers() {
+        
+        //home
+        let homeNavController = templateNavController(unselectedImage: UIImage(, selectedImage: <#T##UIImage#>)
+        
+        //search
+        let searchController = UIViewController()
+        let searchNavController = UINavigationController(rootViewController: searchController)
+        
+        searchNavController.tabBarItem.image = UIImage(named: "search_unselected")
+        searchNavController.tabBarItem.selectedImage = UIImage(named: "search_selected")
+        
+        //user profile
         let layout = UICollectionViewFlowLayout()
+        
         let userProfileController = UserProfileController(collectionViewLayout: layout)
+        let userProfileNavController = UINavigationController(rootViewController: userProfileController)
         
-        let navController = UINavigationController(rootViewController: userProfileController)
-        
-        navController.tabBarItem.image = UIImage(named: "profile_unselected.png")
-        navController.tabBarItem.selectedImage = UIImage(named: "profile_selected.png")
+        userProfileNavController.tabBarItem.image = UIImage(named: "profile_unselected.png")
+        userProfileNavController.tabBarItem.selectedImage = UIImage(named: "profile_selected.png")
         
         tabBar.tintColor = .black
-            
-        viewControllers = [navController]
+        
+        viewControllers = [homeNavController, searchNavController, userProfileNavController]
+    }
+    
+    fileprivate func templateNavController(unselectedImage: UIImage, selectedImage: UIImage) -> UINavigationController {
+        let viewController = UIViewController()
+        let navController = UINavigationController(rootViewController: viewController)
+        
+        navController.tabBarItem.image = unselectedImage
+        navController.tabBarItem.selectedImage = selectedImage
+        
+        return navController
     }
 }
