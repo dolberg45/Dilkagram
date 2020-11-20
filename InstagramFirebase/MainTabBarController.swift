@@ -9,9 +9,13 @@
 import UIKit
 import Firebase
 
-class MainTabBarController: UITabBarController {
+class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.delegate = self
         
         //Показать, если не авторизован.
         DispatchQueue.main.async {
@@ -54,7 +58,11 @@ class MainTabBarController: UITabBarController {
         
         tabBar.tintColor = .black
         
-        viewControllers = [homeNavController, searchNavController, plusNavController, likeNavController, userProfileNavController]
+        viewControllers = [homeNavController,
+                           searchNavController,
+                           plusNavController,
+                           likeNavController,
+                           userProfileNavController]
         
         //modify tab bar item insets
         guard let items = tabBar.items else { return }
@@ -73,5 +81,25 @@ class MainTabBarController: UITabBarController {
         navController.tabBarItem.selectedImage = selectedImage
         
         return navController
+    }
+    
+    //MARK: - UITabBarControllerDelegate
+    //False - makes the selected tab bar not clickable.
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        
+        let index = viewControllers?.firstIndex(of: viewController)
+        
+        if index == 2 {
+            
+            let layout = UICollectionViewFlowLayout()
+            let photoSelectorController = PhotoSelectorController(collectionViewLayout: layout)
+            let navigationController = UINavigationController(rootViewController: photoSelectorController)
+            navigationController.modalPresentationStyle = .overFullScreen
+            present(navigationController, animated: true, completion: nil)
+            
+            return false
+        }
+        
+        return true
     }
 }
