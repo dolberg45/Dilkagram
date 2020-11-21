@@ -20,9 +20,11 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         
         collectionView.register(UserProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
         
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cellId")
+        collectionView.register(UserProfilePhotoCell.self, forCellWithReuseIdentifier: "cellId")
         
         setupLogOutButton()
+        
+        fetchPost()
     }
     
     fileprivate func setupLogOutButton() {
@@ -56,15 +58,15 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         present(alertController, animated: true, completion: nil)
     }
     
-    //MARK: - Method, который добавляет n ячеек под меню.
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 15
+        return posts.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier:  "cellId", for: indexPath)
         
-        cell.backgroundColor = .gray
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier:  "cellId", for: indexPath) as! UserProfilePhotoCell
+        
+        cell.post = posts[indexPath.item]
         
         return cell
     }
@@ -117,23 +119,43 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         
         header.user = self.user
         
-        //Некоректно
-        //header.addSubview(UIImageView())
-        
         return header
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: view.frame.width, height: 200)
     }
-}
-
-struct User {
-    let userName: String
-    let profileImageUrl: String
     
-    init(dictionary: [String: Any]) {
-        self.userName = dictionary["username"] as? String ?? ""
-        self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
+    
+    //MARK:- Working with posts
+    
+    var posts = [Post]()
+    
+    fileprivate func fetchPost() {
+        guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
+        
+        let reference =  FirebaseDatabase.Database.database().reference().child("posts").child(uid)
+        reference.observeSingleEvent(of: .value) { (snapshot) in
+            
+            guard let dictionaries = snapshot.value as? [String: Any] else { return }
+            
+            dictionaries.forEach { (key, value) in
+                //print("Key: \(key), Value: \(value)")
+                
+                guard let dictionary = value as? [String: Any] else { return }
+                
+                let imageUrl = dictionary["imageUrl"] as? String
+                
+                let post = Post(dictionary: dictionary)
+                self.posts.append(post)
+            }
+            
+            self.collectionView.reloadData()
+            
+        } withCancel: { (err) in
+            
+            print("Failed to fetch posts: \(err)")
+        }
+
     }
 }

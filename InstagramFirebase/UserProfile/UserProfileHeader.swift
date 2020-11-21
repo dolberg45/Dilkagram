@@ -178,7 +178,7 @@ class UserProfileHeader: UICollectionViewCell {
     
     
     
-    ////Метод для загрузка и инициализации изображения из Firebase в зону для аватарки.
+    //Метод для загрузка и инициализации изображения из Firebase в зону для аватарки.
     fileprivate func setUpProfileImage() {
         guard let profileImageUrl = user?.profileImageUrl else { return }
         
