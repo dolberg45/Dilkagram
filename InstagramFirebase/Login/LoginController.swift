@@ -21,10 +21,8 @@ class LoginController: UIViewController {
         logoImageView.anchor(top: nil, left: nil, bottom: nil, right: nil, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 200, height: 50)
         logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        logoImageView.translatesAutoresizingMaskIntoConstraints = false
         
         view.backgroundColor = UIColor.rgb(red: 0, green: 120, blue: 175)
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
@@ -78,7 +76,6 @@ class LoginController: UIViewController {
         
         
         button.addTarget(self, action: #selector(handleShowSighUp), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -98,7 +95,7 @@ class LoginController: UIViewController {
         view.backgroundColor = .white
         
         view.addSubview(dontHaveAccountButton)
-        dontHaveAccountButton.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -20, paddingRight: 0, width: 0, height: 50)
+        dontHaveAccountButton.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 20, paddingRight: 0, width: 0, height: 50)
         
         
         setupInputFields()
@@ -114,7 +111,6 @@ class LoginController: UIViewController {
         view.addSubview(stackView)
         stackView.anchor(top: logoContainerView.bottomAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 40, paddingLeft: 40, paddingBottom: 0, paddingRight: -40, width: 0, height: 140)
         
-        stackView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     @objc func handleTextInputChange() {

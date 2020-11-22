@@ -15,7 +15,6 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
     let plusPhotoButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "plus_photo.png")?.withRenderingMode(.alwaysOriginal), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         //Добавляем действие при нажатии на кнопку.
         button.addTarget(self, action: #selector(handlePlusPhoto), for: .touchUpInside)
         return button
@@ -136,7 +135,6 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         
         
         button.addTarget(self, action: #selector(handleAlreadyHaveAccount), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -226,7 +224,7 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         plusPhotoButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         view.addSubview(alreadyHaveAccountButton)
-        alreadyHaveAccountButton.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: -20, paddingRight: 0, width: 0, height: 50)
+        alreadyHaveAccountButton.anchor(top: nil, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 20, paddingRight: 0, width: 0, height: 50)
         
         
         setupInputFields()
@@ -235,8 +233,6 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
     
     fileprivate func setupInputFields() {
         let stackView = UIStackView(arrangedSubviews: [emailTextField, usernameTextField, passwordTextField, signUpButton])
-        
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         
         //Делит пополам по центру фигуры
         stackView.distribution = .fillEqually
