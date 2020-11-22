@@ -13,15 +13,18 @@ class UserProfileHeader: UICollectionViewCell {
     
     var user: User? {
         didSet {
-            setUpProfileImage()
+            guard let profileImageUrl = user?.profileImageUrl else { return }
+            
+            profileImageView.loadImage(urlString: profileImageUrl)
+            //setUpProfileImage()
             //Задаем лабел под аватаркой как username.
             usernameLabel.text = user?.userName
         }
         
     }
     
-    let profileImageView: UIImageView = {
-        let imageView = UIImageView()
+    let profileImageView: CustomImageView = {
+        let imageView = CustomImageView()
         imageView.backgroundColor = .red
         return imageView
     }()
@@ -140,7 +143,6 @@ class UserProfileHeader: UICollectionViewCell {
         
         addSubview(stackView)
         stackView.anchor(top: topAnchor, left: profileImageView.rightAnchor, bottom: nil, right: rightAnchor, paddingTop: 12, paddingLeft: 12, paddingBottom: 0, paddingRight: -5, width: 0, height: 50)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     fileprivate func setupBottomToolBar() {
@@ -162,44 +164,14 @@ class UserProfileHeader: UICollectionViewCell {
         addSubview(bottomDividerView)
     
         stackView.anchor(top: nil, left: leftAnchor, bottom: self.bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 50)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         
         topDividerView.anchor(top: stackView.topAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0.5)
         
         bottomDividerView.anchor(top: stackView.bottomAnchor, left: leftAnchor, bottom: nil, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 0.5)
         
-        topDividerView.translatesAutoresizingMaskIntoConstraints = false
-        bottomDividerView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
-    //Метод для загрузка и инициализации изображения из Firebase в зону для аватарки.
-    fileprivate func setUpProfileImage() {
-        guard let profileImageUrl = user?.profileImageUrl else { return }
-        
-        guard let url = URL(string: profileImageUrl) else { return }
-        URLSession.shared.dataTask(with: url) { (data, response, err) in
-            //Проверьте наличие ошибки, затем создайте изображение, используя данные(data).
-            if let err = err {
-                print("Failed to fetch profile image", err)
-                return
-            }
-            //Возможно, проверьте статус ответа 200 (HTTP OK)
-
-            guard let data = data else { return }
-            let firebaseImage = UIImage(data: data)
-            
-            //Используем DispatchQueue чтобы использовать инициализацю изображения из главного(main) потока.
-            DispatchQueue.main.async {
-                self.profileImageView.image = firebaseImage
-            }
-        }.resume()
-    }
-    
-    
 }

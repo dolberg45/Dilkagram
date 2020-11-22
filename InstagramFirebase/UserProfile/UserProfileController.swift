@@ -24,7 +24,9 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         
         setupLogOutButton()
         
-        fetchPost()
+        //fetchPosts()
+        
+        fetchOrderedPosts()
     }
     
     fileprivate func setupLogOutButton() {
@@ -99,10 +101,6 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
             
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             
-            //Создали структуру User с полями и конструктором вместо двух строчек снизу.
-//            let profileImageUrl = dictionary["profileImageUrl"] as? String
-//            let username = dictionary["username"] as? String
-            
             self.user = User(dictionary: dictionary)
             
             self.navigationItem.title = self.user?.userName
@@ -131,7 +129,26 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
     
     var posts = [Post]()
     
-    fileprivate func fetchPost() {
+    fileprivate func fetchOrderedPosts() {
+        guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
+
+        let reference =  FirebaseDatabase.Database.database().reference().child("posts").child(uid)
+        
+        reference.queryOrdered(byChild: "creationDate").observe(.childAdded) { (snapshot) in
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            
+            let post = Post(dictionary: dictionary)
+            self.posts.append(post)
+            
+            self.collectionView.reloadData()
+            
+        } withCancel: { (err) in
+            print("Failed to fetch ordered posts: ", err)
+        }
+
+    }
+    
+    fileprivate func fetchPosts() {
         guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
         
         let reference =  FirebaseDatabase.Database.database().reference().child("posts").child(uid)
