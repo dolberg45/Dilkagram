@@ -108,27 +108,35 @@ class SharePhotoController: UIViewController {
     }
     
     fileprivate func saveToDatabaseWithImageUrl(imageUrl: String) {
-        guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
-        guard let postCaption = textView.text else { return }
-        guard let postImage = selectedImage else { return }
         
-        let userPostReference = FirebaseDatabase.Database.database().reference().child("posts").child(uid)
-        let reference = userPostReference.childByAutoId()
-        
-        let values = ["imageUrl": imageUrl, "caption": postCaption, "imageWidth": postImage.size.width, "imageHeight": postImage.size.height, "creationDate": Date().timeIntervalSince1970] as [String : Any]
-        
-        reference.updateChildValues(values) { (err, ref) in
+        DispatchQueue.global(qos: .userInteractive).async {
+            guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
+            guard let postCaption = self.textView.text else { return }
+            guard let postImage = self.selectedImage else { return }
             
-            if let err = err {
-                self.navigationItem.rightBarButtonItem?.isEnabled = true
-                print("Failed to save post to Database, \(err)")
-                return
+            let userPostReference = FirebaseDatabase.Database.database().reference().child("posts").child(uid)
+            let reference = userPostReference.childByAutoId()
+            
+            let values = ["imageUrl": imageUrl, "caption": postCaption, "imageWidth": postImage.size.width, "imageHeight": postImage.size.height, "creationDate": Date().timeIntervalSince1970] as [String : Any]
+            
+            reference.updateChildValues(values) { (err, ref) in
+                
+                if let err = err {
+                    DispatchQueue.main.async {
+                        self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    }
+                    print("Failed to save post to Database, \(err)")
+                    return
+                }
+                
+                print("Successfully saved post to Database")
+                
+                DispatchQueue.main.async {
+                    self.dismiss(animated: true, completion: nil)
+                }
+                
+                NotificationCenter.default.post(name: Constants.Notifications.updateFeedNotification, object: nil)
             }
-            
-            print("Successfully saved post to Database")
-            self.dismiss(animated: true, completion: nil)
         }
     }
-    
-    
 }

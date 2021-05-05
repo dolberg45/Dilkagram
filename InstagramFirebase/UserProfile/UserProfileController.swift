@@ -10,23 +10,21 @@ import UIKit
 import Firebase
 
 class UserProfileController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+    
+    var cellId = "cellId"
+    
+    var userId: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.collectionView.backgroundColor = .white
-        self.navigationItem.title = Auth.auth().currentUser?.uid
-        fetchUser()
-        
         collectionView.register(UserProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
-        
-        collectionView.register(UserProfilePhotoCell.self, forCellWithReuseIdentifier: "cellId")
+        collectionView.register(UserProfilePhotoCell.self, forCellWithReuseIdentifier: cellId)
         
         setupLogOutButton()
         
-        //fetchPosts()
-        
-        fetchOrderedPosts()
+        fetchUser()
     }
     
     fileprivate func setupLogOutButton() {
@@ -92,23 +90,20 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
     var user: User?
     
     fileprivate func fetchUser() {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
         
-        FirebaseDatabase.Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value) { (snapshot) in
-            print(snapshot.value ?? "")
-            
-            guard let dictionary = snapshot.value as? [String: Any] else { return }
-            
-            self.user = User(dictionary: dictionary)
-            
+        let uid = userId ?? (Firebase.Auth.auth().currentUser?.uid ?? "")
+        
+//        guard let uid = Auth.auth().currentUser?.uid else {
+//            return
+//        }
+        
+        Firebase.Database.fetchUserWithUID(uid: uid) { (user) in
+            self.user = user
             self.navigationItem.title = self.user?.userName
             
             self.collectionView.reloadData()
             
-        } withCancel: { (err) in
-            print("Failed to fetch user", err)
+            self.fetchOrderedPosts()
         }
     }
     
@@ -130,14 +125,16 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
     var posts = [Post]()
     
     fileprivate func fetchOrderedPosts() {
-        guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
+        guard let uid = user?.uid else { return }
 
         let reference =  FirebaseDatabase.Database.database().reference().child("posts").child(uid)
         
-        reference.queryOrdered(byChild: "creationDate").observe(.childAdded) { (snapshot) in
+        reference.queryOrdered(byChild: "creationDate").observe(.childAdded) { [self] (snapshot) in
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             
-            let post = Post(dictionary: dictionary)
+            guard let user = user else { return }
+            
+            let post = Post(user: user, dictionary: dictionary)
             self.posts.append(post)
             
             self.collectionView.reloadData()
@@ -152,7 +149,7 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         guard let uid = FirebaseAuth.Auth.auth().currentUser?.uid else { return }
         
         let reference =  FirebaseDatabase.Database.database().reference().child("posts").child(uid)
-        reference.observeSingleEvent(of: .value) { (snapshot) in
+        reference.observeSingleEvent(of: .value) { [self] (snapshot) in
             
             guard let dictionaries = snapshot.value as? [String: Any] else { return }
             
@@ -161,9 +158,7 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
                 
                 guard let dictionary = value as? [String: Any] else { return }
                 
-                let imageUrl = dictionary["imageUrl"] as? String
-                
-                let post = Post(dictionary: dictionary)
+                let post = Post(user: user!, dictionary: dictionary)
                 self.posts.append(post)
             }
             

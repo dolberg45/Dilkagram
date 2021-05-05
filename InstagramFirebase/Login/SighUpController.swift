@@ -58,6 +58,7 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         textField.font = UIFont.systemFont(ofSize: 14)
         
         textField.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
+        textField.addTarget(nil, action:Selector(("firstResponderAction:")), for:.editingDidEndOnExit)
         
         return textField
     }()
@@ -70,7 +71,7 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         if isFormValid {
             //Кнопка регистрации работает, только если все поля заполнены
             signUpButton.isEnabled = true
-            signUpButton.backgroundColor = UIColor.rgb(red: 17, green: 154, blue: 237)
+            signUpButton.backgroundColor = UIColor.mainBlue()
         } else {
             //Кнопка не работает
             signUpButton.isEnabled = false
@@ -86,6 +87,7 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         textField.font = UIFont.systemFont(ofSize: 14)
         
         textField.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
+        textField.addTarget(nil, action:Selector(("firstResponderAction:")), for:.editingDidEndOnExit)
         
         return textField
     }()
@@ -102,6 +104,7 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
         textField.font = UIFont.systemFont(ofSize: 14)
         
         textField.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
+        textField.addTarget(nil, action:Selector(("firstResponderAction:")), for:.editingDidEndOnExit)
         
         return textField
     }()
@@ -151,11 +154,13 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
             if let err = err {
                 print("Failed to create user: \(err)")
                 let alertController = UIAlertController(title: "Error", message: err.localizedDescription, preferredStyle: .alert)
-                            let action = UIAlertAction(title: "Okey", style: .default) { (action) in
-                            }
+                
+                let action = UIAlertAction(title: "Okey", style: .default) { (action) in
+                    //nil
+                }
 
-                    alertController.addAction(action)
-                    self.present(alertController, animated: true, completion: nil)
+                alertController.addAction(action)
+                self.present(alertController, animated: true, completion: nil)
                 return
             }
             

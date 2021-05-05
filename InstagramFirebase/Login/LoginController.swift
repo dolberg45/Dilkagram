@@ -34,6 +34,7 @@ class LoginController: UIViewController {
         textField.font = UIFont.systemFont(ofSize: 14)
         
         textField.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
+        textField.addTarget(nil, action:Selector(("firstResponderAction:")), for:.editingDidEndOnExit)
         
         return textField
     }()
@@ -47,6 +48,7 @@ class LoginController: UIViewController {
         textField.font = UIFont.systemFont(ofSize: 14)
         
         textField.addTarget(self, action: #selector(handleTextInputChange), for: .editingChanged)
+        textField.addTarget(nil, action:Selector(("firstResponderAction:")), for:.editingDidEndOnExit)
         
         return textField
     }()

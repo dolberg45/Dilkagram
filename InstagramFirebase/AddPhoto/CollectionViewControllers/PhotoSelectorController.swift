@@ -162,7 +162,7 @@ class PhotoSelectorController: UICollectionViewController, UICollectionViewDeleg
         //Извлекаем ресурс типа фото; count = колличеству элементов в Галерее.
         let allPhotos = PHAsset.fetchAssets(with: .image, options: assetsFetchOptions())
         
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             allPhotos.enumerateObjects { (asset, count, stop) in
                 
                 let imageManager = PHImageManager.default()

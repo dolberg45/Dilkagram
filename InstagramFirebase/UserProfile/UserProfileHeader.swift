@@ -9,7 +9,14 @@
 import UIKit
 import Firebase
 
+protocol UserProfileHeaderDelegate {
+    func changeToListView()
+    func changeToGridView()
+}
+
 class UserProfileHeader: UICollectionViewCell {
+    
+    var delegate: UserProfileHeaderDelegate?
     
     var user: User? {
         didSet {
@@ -19,32 +26,34 @@ class UserProfileHeader: UICollectionViewCell {
             //setUpProfileImage()
             //Задаем лабел под аватаркой как username.
             usernameLabel.text = user?.userName
+            
+            setupEditAndFollowButton()
         }
-        
     }
     
     let profileImageView: CustomImageView = {
         let imageView = CustomImageView()
-        imageView.backgroundColor = .red
         return imageView
     }()
     
-    let gridButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "grid.png"), for: .normal)
+    lazy var gridButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "grid"), for: .normal)
+        button.addTarget(self, action: #selector(changeToGridView), for: .touchUpInside)
         return button
     }()
     
-    let listButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "list.png"), for: .normal)
+    lazy var listButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "list"), for: .normal)
         button.tintColor = UIColor(white: 0, alpha: 0.2)
+        button.addTarget(self, action: #selector(changeToListView), for: .touchUpInside)
         return button
     }()
     
-    let bookmarkButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "ribbon.png"), for: .normal)
+    lazy var bookmarkButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "ribbon"), for: .normal)
         button.tintColor = UIColor(white: 0, alpha: 0.2)
         return button
     }()
@@ -92,7 +101,7 @@ class UserProfileHeader: UICollectionViewCell {
         return label
     }()
     
-    let editProfileButton: UIButton = {
+    lazy var editProfileOrFollowButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Edit Profile", for: .normal)
         button.setTitleColor(.black, for: .normal)
@@ -103,6 +112,7 @@ class UserProfileHeader: UICollectionViewCell {
         button.layer.borderWidth = 1
         //Задаем округленные края для границы
         button.layer.cornerRadius = 3
+        button.addTarget(self, action: #selector(handleEditProfileOrFollow), for: .touchUpInside)
         return button
     }()
     
@@ -129,11 +139,10 @@ class UserProfileHeader: UICollectionViewCell {
         setupEditProfileButton()
     }
     
-    fileprivate func setupEditProfileButton() {
-        addSubview(self.editProfileButton)
-        self.editProfileButton.anchor(top: postsLabel.bottomAnchor, left: postsLabel.leftAnchor, bottom: profileImageView.bottomAnchor, right: followingLabel.rightAnchor, paddingTop: 8, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 34)
-        self.editProfileButton.translatesAutoresizingMaskIntoConstraints = false
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
+    
     
     //MARK: - Method для добавление трех лейблов (колл. постов, подписчиков, подписок) рядом с аватаркой.
     fileprivate func setupUserStats() {
@@ -171,7 +180,102 @@ class UserProfileHeader: UICollectionViewCell {
         
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    fileprivate func setupEditProfileButton() {
+        addSubview(self.editProfileOrFollowButton)
+        self.editProfileOrFollowButton.anchor(top: postsLabel.bottomAnchor, left: postsLabel.leftAnchor, bottom: profileImageView.bottomAnchor, right: followingLabel.rightAnchor, paddingTop: 8, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: 0, height: 34)
+        self.editProfileOrFollowButton.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    fileprivate func setupEditAndFollowButton() {
+        
+        guard let currentLoggedInUserId = Firebase.Auth.auth().currentUser?.uid else { return }
+        
+        guard let userId = user?.uid else { return }
+        
+        if currentLoggedInUserId == userId {
+            //Edit profile
+            
+        } else {
+            //follow profile
+            
+            //Проверка на подписку
+            Firebase.Database.database().reference().child("following").child(currentLoggedInUserId).child(userId).observeSingleEvent(of: .value) { (snapshot) in
+                
+                if let isFollowing = snapshot.value as? Int, isFollowing == 1 {
+                    
+                    self.editProfileOrFollowButton.setTitle("Unfollow", for: .normal)
+                    
+                } else {
+                    self.setupFollowStyle()
+                }
+                
+            } withCancel: { (error) in
+                print("Failed to check if following", error)
+            }
+        }
+    }
+    
+    fileprivate func setupFollowStyle() {
+        
+        self.editProfileOrFollowButton.setTitle("Follow", for: .normal)
+        self.editProfileOrFollowButton.backgroundColor = UIColor.rgb(red: 17, green: 154, blue: 237)
+        self.editProfileOrFollowButton.setTitleColor(.white, for: .normal)
+        self.editProfileOrFollowButton.layer.borderColor = UIColor(white: 0, alpha: 0.2).cgColor
+    }
+    
+    @objc public func handleEditProfileOrFollow() {
+        
+        guard let currentLoggedInUserdId = Firebase.Auth.auth().currentUser?.uid else { return }
+        
+        guard let userId = user?.uid else { return }
+        
+        if editProfileOrFollowButton.titleLabel?.text == "Unfollow" {
+            
+            //unfollow logic is here
+            Firebase.Database.database().reference().child("following").child(currentLoggedInUserdId).child(userId).removeValue { (error, ref) in
+                if let error = error {
+                    print("Failed to unfollow user: ", error)
+                    return
+                }
+                
+                print("Succesfully unfollowed user: ", self.user?.userName ?? "")
+                
+                self.setupFollowStyle()
+            }
+            
+        } else {
+            //follow logic is here
+            let reference = Firebase.Database.database().reference().child("following").child(currentLoggedInUserdId)
+            
+            let values = [userId: 1]
+            
+            reference.updateChildValues(values) { (error, ref) in
+                if let err = error {
+                    print("Failed to follow user", err)
+                    return
+                }
+                print("Succesfully followed user: ", self.user?.userName ?? "")
+                
+                self.editProfileOrFollowButton.setTitle("Unfollow", for: .normal)
+                self.editProfileOrFollowButton.backgroundColor = .white
+                self.editProfileOrFollowButton.setTitleColor(.black, for: .normal)
+            }
+        }
+    }
+}
+
+
+extension UserProfileHeader: UserProfileHeaderDelegate {
+    
+    @objc func changeToGridView() {
+        gridButton.tintColor = .mainBlue()
+        listButton.tintColor = UIColor(white: 0, alpha: 0.2)
+        delegate?.changeToGridView()
+    }
+    
+    @objc func changeToListView() {
+        listButton.tintColor = .mainBlue()
+        gridButton.tintColor = UIColor(white: 0, alpha: 0.2)
+        delegate?.changeToListView()
     }
 }
