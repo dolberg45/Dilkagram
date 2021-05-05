@@ -11,9 +11,12 @@ import Firebase
 
 class UserProfileController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
-    var cellId = "cellId"
+    let cellId = "cellId"
+    let homePostCellId = "homePostCellId"
     
     var userId: String?
+    
+    var isGridView = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +24,7 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         self.collectionView.backgroundColor = .white
         collectionView.register(UserProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerId")
         collectionView.register(UserProfilePhotoCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView.register(HomePostCollectionViewCell.self, forCellWithReuseIdentifier: homePostCellId)
         
         setupLogOutButton()
         
@@ -64,11 +68,21 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier:  "cellId", for: indexPath) as! UserProfilePhotoCell
-        
-        cell.post = posts[indexPath.item]
-        
-        return cell
+        if isGridView {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier:  "cellId", for: indexPath) as! UserProfilePhotoCell
+            
+            cell.post = posts[indexPath.item]
+            
+            return cell
+            
+        } else {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: homePostCellId, for: indexPath) as! HomePostCollectionViewCell
+            
+            cell.post = posts[indexPath.item]
+            
+            return cell
+        }
     }
     
     //Метод уменьшает расстояние между ячейками.
@@ -82,8 +96,20 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
     
     //Метод задает размер ячейки.
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (view.frame.width - 2) / 3
-        return CGSize(width: width, height: width)
+        
+        if isGridView {
+            let width = (view.frame.width - 2) / 3
+            return CGSize(width: width, height: width)
+        } else {
+            
+            var height: CGFloat = 40 + 8 + 8 //Username userProfileImageView
+            height += view.frame.width
+            height += 50
+            height += 60
+            
+            return CGSize(width: view.frame.width, height: height)
+        }
+        
     }
     
     
@@ -111,6 +137,7 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerId", for: indexPath) as! UserProfileHeader
         
         header.user = self.user
+        header.delegate = self
         
         return header
     }
@@ -170,4 +197,18 @@ class UserProfileController: UICollectionViewController, UICollectionViewDelegat
         }
 
     }
+}
+
+extension UserProfileController: UserProfileHeaderDelegate {
+    
+    func changeToGridView() {
+        isGridView = true
+        collectionView.reloadData()
+    }
+    
+    func changeToListView() {
+        isGridView = false
+        collectionView.reloadData()
+    }
+    
 }
