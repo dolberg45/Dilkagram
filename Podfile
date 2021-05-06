@@ -10,6 +10,7 @@ target 'InstagramFirebase' do
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
   pod 'Firebase/Storage'
+  pod 'Firebase/Messaging'
   # add the Firebase pod for Google Analytics
   pod 'Firebase/Analytics'
   # add pods for any other desired Firebase products
