@@ -189,7 +189,8 @@ class SighUpController: UIViewController, UIImagePickerControllerDelegate, UINav
                     if let result = result {
                         print("Successfully created user: \(result)")
                         guard let uid = Auth.auth().currentUser?.uid else { return }
-                        let dictionaryValues = ["username" : username, "profileImageUrl": profileImageUrl]
+                        guard let fcmToken = Messaging.messaging().fcmToken else { return }
+                        let dictionaryValues = ["username" : username, "profileImageUrl": profileImageUrl, "fcmToken": fcmToken]
                         let values = [uid : dictionaryValues]
 
                         Database.database().reference().child("users").updateChildValues(values) { (err, ref) in

@@ -21,6 +21,8 @@
 		075FA7DC264157A300F3710B /* CommentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075FA7DB264157A300F3710B /* CommentsController.swift */; };
 		075FA7DF2641C49800F3710B /* CommentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075FA7DE2641C49800F3710B /* CommentCollectionViewCell.swift */; };
 		075FA7E22641C79100F3710B /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075FA7E12641C79100F3710B /* Comment.swift */; };
+		07A03C652645121D0094C94E /* CommentInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A03C642645121D0094C94E /* CommentInputAccessoryView.swift */; };
+		07A03C6826451C3C0094C94E /* CommentInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A03C6726451C3C0094C94E /* CommentInputTextView.swift */; };
 		07B65804264318A9006BB282 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 07B65803264318A9006BB282 /* GoogleService-Info.plist */; };
 		07C4FE39250C1361007088CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C4FE38250C1361007088CC /* AppDelegate.swift */; };
 		07C4FE3B250C1361007088CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C4FE3A250C1361007088CC /* SceneDelegate.swift */; };
@@ -57,6 +59,8 @@
 		075FA7DB264157A300F3710B /* CommentsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsController.swift; sourceTree = "<group>"; };
 		075FA7DE2641C49800F3710B /* CommentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCollectionViewCell.swift; sourceTree = "<group>"; };
 		075FA7E12641C79100F3710B /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		07A03C642645121D0094C94E /* CommentInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentInputAccessoryView.swift; sourceTree = "<group>"; };
+		07A03C6726451C3C0094C94E /* CommentInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentInputTextView.swift; sourceTree = "<group>"; };
 		07B657E32642C4A2006BB282 /* InstagramFirebase.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = InstagramFirebase.entitlements; sourceTree = "<group>"; };
 		07B65803264318A9006BB282 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		07C4FE35250C1361007088CC /* InstagramFirebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstagramFirebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -233,6 +237,8 @@
 				07F30169256AE29A00EADCAE /* HomePostCollectionViewCell.swift */,
 				075FA7DB264157A300F3710B /* CommentsController.swift */,
 				075FA7DE2641C49800F3710B /* CommentCollectionViewCell.swift */,
+				07A03C642645121D0094C94E /* CommentInputAccessoryView.swift */,
+				07A03C6726451C3C0094C94E /* CommentInputTextView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -386,6 +392,8 @@
 				07F30167256AE04A00EADCAE /* HomeController.swift in Sources */,
 				07F301602569D5AB00EADCAE /* User.swift in Sources */,
 				07F3016A256AE29A00EADCAE /* HomePostCollectionViewCell.swift in Sources */,
+				07A03C652645121D0094C94E /* CommentInputAccessoryView.swift in Sources */,
+				07A03C6826451C3C0094C94E /* CommentInputTextView.swift in Sources */,
 				07F30163256A9EC800EADCAE /* CustomImageView.swift in Sources */,
 				07F3014E25690BF700EADCAE /* PhotoSelectorHeader.swift in Sources */,
 				075FA7D52641391B00F3710B /* CustomAnimationPresentor.swift in Sources */,

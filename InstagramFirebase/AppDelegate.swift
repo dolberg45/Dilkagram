@@ -12,6 +12,8 @@ import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
+    
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -43,6 +45,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
         
         Messaging.messaging().delegate = self
         
+        
+        Messaging.messaging().subscribe(toTopic: "grinch") { error in
+          print("Subscribed to grinch topic")
+        }
+        
         UNUserNotificationCenter.current().delegate = self
         
         //User notifications auth
@@ -62,6 +69,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate, UNUser
         }
         
         application.registerForRemoteNotifications()
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+      // If you are receiving a notification message while your app is in the background,
+      // this callback will not be fired till the user taps on the notification launching the application.
+      // TODO: Handle data of notification
+
+      // With swizzling disabled you must let Messaging know about the message, for Analytics
+      // Messaging.messaging().appDidReceiveMessage(userInfo)
+      // Print full message.
+      print(userInfo)
+
+      completionHandler(UIBackgroundFetchResult.newData)
+    }
+    
+    //Не работает
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        let userInfo = response.notification.request.content.userInfo
+        
+        if let followerId = userInfo["followedId"] as? String {
+            print(followerId)
+            
+            
+            let userProfileController = UserProfileController(collectionViewLayout: UICollectionViewFlowLayout())
+            userProfileController.userId = followerId
+            
+            // How do we access our main
+            if let mainTabBarController = window?.rootViewController as? MainTabBarController {
+                mainTabBarController.selectedIndex = 0
+                
+                if let homeViewController = mainTabBarController.viewControllers?.first as? UINavigationController {
+                    
+                    homeViewController.pushViewController(userProfileController, animated: true)
+                }
+                
+            }
+        }
+        
     }
     
     //--------------------------
